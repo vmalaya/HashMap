@@ -2,13 +2,23 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 public class HashMap {
-    private  static  final int SIZE_OF_TABLE = 16;
+    private final static int CAPACITY = 16;
+    private final static double DEFAULT_LOAD_FACTOR = 0.75;
+
+    private int defaultSize;
     private int size;
     private LinkedList[] table;
 
     public HashMap() {
         this.size = 0;
-        this.table = new LinkedList[SIZE_OF_TABLE];
+        this.table = new LinkedList[CAPACITY];
+        defaultSize = CAPACITY;
+    }
+
+    private HashMap(int defaultSize) {
+        this.size = 0;
+        this.table = new LinkedList[defaultSize];
+        this.defaultSize = defaultSize;
     }
 
     public static class Entry {
@@ -30,72 +40,50 @@ public class HashMap {
 
         @Override
         public boolean equals(Object o) {
-            boolean result;
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()){
-                return false;
-            }
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
 
             Entry entry = (Entry) o;
-            if(key != null){
-                result = key.equals(entry.key);
-            } else {
-                result = entry.key == null;
-            }
-            if(value != null){
-                result = value.equals(entry.value);
-            } else {
-                result = entry.value != null;
-            }
 
-            return result;
+            if (key != null ? !key.equals(entry.key) : entry.key != null) return false;
+            return value != null ? value.equals(entry.value) : entry.value == null;
         }
 
         @Override
         public int hashCode() {
-            int hashcode;
-            if(key != null){
-                hashcode = key.hashCode();
-            } else{
-                hashcode = 0;
-            }
-            return hashcode;
+            return key != null ? key.hashCode() : 0;
         }
-
-
     }
     public Object put(Object key, Object value){
         Object result = null;
-        if( key != null){
-            if(size > SIZE_OF_TABLE){
-                this.resize();
-                this.put(key, value);
-            }
-            Entry entry = new Entry(key, value);
-            int index = Math.abs(key.hashCode())% SIZE_OF_TABLE;
-            LinkedList list = table[index];
-            if(list == null){
-                list = new LinkedList();
-            }
-            if(list.contains(key) == false){
-                list.add(entry);
-                size++;
-            } else {
-                int tempIndex = list.indexOf(key);
-                result = list.get(tempIndex);
-                list.set(tempIndex, entry);
-            }
-            table[index] = list;
+        if( key == null){
+            throw new IllegalArgumentException("Illegal key value!");
         }
+        if(this.size >= this.getThreshold()){
+            this.resize();
+        }
+        Entry entry = new Entry(key, value);
+        int index = Math.abs(key.hashCode())% defaultSize;
+        LinkedList list = table[index];
+        if(list == null){
+            list = new LinkedList();
+        }
+        if(list.contains(key) == false){
+            list.add(entry);
+            size++;
+        } else {
+            int tempIndex = list.indexOf(key);
+            result = list.get(tempIndex);
+            list.set(tempIndex, entry);
+        }
+        table[index] = list;
         return result;
 
     }
     public Object get(Object key){
         Entry entry;
-        int index = Math.abs(key.hashCode())% SIZE_OF_TABLE;
-        LinkedList list= table[index];
+        int index = Math.abs(key.hashCode())% defaultSize;
+        LinkedList list = table[index];
         if(list == null) {
             return null;
         }
@@ -108,30 +96,37 @@ public class HashMap {
         return null;
     }
 
-
-
     private void resize() {
-        LinkedList[] newTable = new LinkedList[SIZE_OF_TABLE*2];
-        transfer(newTable);
-        table = newTable;
+        defaultSize = defaultSize*2;
+        HashMap newHashMap = new HashMap(defaultSize);
+        transfer(newHashMap);
+        table = newHashMap.getTable();
     }
 
-    private void transfer(LinkedList[] newTable) {
-        Object entry;
+    private void transfer(HashMap newHashMap) {
         for (LinkedList list : table) {
-            for (int i = 0; i < size ; i++) {
-                entry = list.get(i);
-                //TODO:пересчитать хеш-код для каждого значения в хеш-таблице
+            if(list != null)
+            for (Object o : list) {
+                if(o != null)
+                newHashMap.put(((Entry) o).key, ((Entry) o).value);
             }
         }
-
     }
 
+    private LinkedList[] getTable() {
+        return table;
+    }
+
+    public int getThreshold() {
+        int result = (int)(defaultSize * DEFAULT_LOAD_FACTOR);
+        return result;
+    }
 
     @Override
     public String toString() {
         return "HashMap{" +
-                "size=" + size +
+                " defaultSize= " + defaultSize +
+                ", size=" + size +
                 ", table=" + Arrays.toString(table) +
                 '}';
     }
