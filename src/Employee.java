@@ -1,14 +1,13 @@
 import java.util.Arrays;
 
-public class Employee {
-    private int id;
-    private int count = 0;
+public class Employee implements Comparable{
+    private Integer id;
     private  String firstName;
     private String lastName;
     private int[] grades;
 
-    public Employee(String firstName, String lastName, int[] grades) {
-        id = ++count;
+    public Employee(int id,String firstName, String lastName, int[] grades) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.grades = grades;
@@ -34,5 +33,11 @@ public class Employee {
     @Override
     public int hashCode() {
         return id;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Employee employee = (Employee) o;
+        return this.id.compareTo((employee.id));
     }
 }

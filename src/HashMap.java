@@ -1,7 +1,8 @@
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Map;
 
-public class HashMap {
+public class HashMap<K,V> {
     private final static int CAPACITY = 16;
     private final static double DEFAULT_LOAD_FACTOR = 0.75;
 
@@ -21,20 +22,20 @@ public class HashMap {
         this.defaultSize = defaultSize;
     }
 
-    public static class Entry {
-        private Object key;
-        private Object value;
+    public static class Entry<K,V> {
+        private K key;
+        private V value;
 
-        public Entry(Object key, Object value) {
+        public Entry(K key, V value) {
             this.key = key;
             this.value = value;
         }
 
-        public Object getKey() {
+        public K getKey() {
             return key;
         }
 
-        public Object getValue() {
+        public V getValue() {
             return value;
         }
 
@@ -54,8 +55,8 @@ public class HashMap {
             return key != null ? key.hashCode() : 0;
         }
     }
-    public Object put(Object key, Object value){
-        Object result = null;
+    public V put(K key, V value){
+        V result = null;
         if( key == null){
             throw new IllegalArgumentException("Illegal key value!");
         }
@@ -73,14 +74,15 @@ public class HashMap {
             size++;
         } else {
             int tempIndex = list.indexOf(key);
-            result = list.get(tempIndex);
+             Entry tempEntry =(Entry)list.get(tempIndex);
+             result = (V) tempEntry.getValue();
             list.set(tempIndex, entry);
         }
         table[index] = list;
         return result;
 
     }
-    public Object get(Object key){
+    public V get(K key){
         Entry entry;
         int index = Math.abs(key.hashCode())% defaultSize;
         LinkedList list = table[index];
@@ -90,7 +92,7 @@ public class HashMap {
         for(Object o : list){
             entry = (Entry)o;
             if(entry.getKey().equals(key)){
-                return entry.getValue();
+                return (V) entry.getValue();
             }
         }
         return null;
@@ -98,17 +100,17 @@ public class HashMap {
 
     private void resize() {
         defaultSize = defaultSize*2;
-        HashMap newHashMap = new HashMap(defaultSize);
+        HashMap<K,V> newHashMap = new HashMap<>(defaultSize);
         transfer(newHashMap);
         table = newHashMap.getTable();
     }
 
-    private void transfer(HashMap newHashMap) {
+    private void transfer(HashMap<K,V> newHashMap) {
         for (LinkedList list : table) {
             if(list != null)
             for (Object o : list) {
                 if(o != null)
-                newHashMap.put(((Entry) o).key, ((Entry) o).value);
+                newHashMap.put((K) ((Entry) o).key, (V) ((Entry) o).value);
             }
         }
     }
