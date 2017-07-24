@@ -10,7 +10,7 @@ public class HashMap<K,V> {
     private int size;
     private LinkedList[] table;
 
-    public HashMap() {
+    HashMap() {
         this.size = 0;
         this.table = new LinkedList[CAPACITY];
         defaultSize = CAPACITY;
@@ -26,16 +26,16 @@ public class HashMap<K,V> {
         private K key;
         private V value;
 
-        public Entry(K key, V value) {
+        Entry(K key, V value) {
             this.key = key;
             this.value = value;
         }
 
-        public K getKey() {
+        K getKey() {
             return key;
         }
 
-        public V getValue() {
+        V getValue() {
             return value;
         }
 
@@ -46,8 +46,7 @@ public class HashMap<K,V> {
 
             Entry entry = (Entry) o;
 
-            if (key != null ? !key.equals(entry.key) : entry.key != null) return false;
-            return value != null ? value.equals(entry.value) : entry.value == null;
+            return (key != null ? key.equals(entry.key) : entry.key == null) && (value != null ? value.equals(entry.value) : entry.value == null);
         }
 
         @Override
@@ -55,7 +54,7 @@ public class HashMap<K,V> {
             return key != null ? key.hashCode() : 0;
         }
     }
-    public V put(K key, V value){
+    V put(K key, V value){
         V result = null;
         if( key == null){
             throw new IllegalArgumentException("Illegal key value!");
@@ -69,7 +68,7 @@ public class HashMap<K,V> {
         if(list == null){
             list = new LinkedList();
         }
-        if(list.contains(key) == false){
+        if(!list.contains(key)){
             list.add(entry);
             size++;
         } else {
@@ -119,9 +118,8 @@ public class HashMap<K,V> {
         return table;
     }
 
-    public int getThreshold() {
-        int result = (int)(defaultSize * DEFAULT_LOAD_FACTOR);
-        return result;
+    private int getThreshold() {
+        return (int)(defaultSize * DEFAULT_LOAD_FACTOR);
     }
 
     @Override

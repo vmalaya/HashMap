@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Employee implements Comparable{
     private Integer id;
@@ -6,15 +7,11 @@ public class Employee implements Comparable{
     private String lastName;
     private int[] grades;
 
-    public Employee(int id,String firstName, String lastName, int[] grades) {
+    Employee(int id, String firstName, String lastName, int[] grades) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.grades = grades;
-    }
-
-    public String getFirstName() {
-        return firstName;
     }
 
     @Override
@@ -24,10 +21,7 @@ public class Employee implements Comparable{
 
         Employee employee = (Employee) o;
 
-        if (id != employee.id) return false;
-        if (firstName != null ? !firstName.equals(employee.firstName) : employee.firstName != null) return false;
-        if (lastName != null ? !lastName.equals(employee.lastName) : employee.lastName != null) return false;
-        return Arrays.equals(grades, employee.grades);
+        return Objects.equals(id, employee.id) && (firstName != null ? firstName.equals(employee.firstName) : employee.firstName == null) && (lastName != null ? lastName.equals(employee.lastName) : employee.lastName == null) && Arrays.equals(grades, employee.grades);
     }
 
     @Override
