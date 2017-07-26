@@ -56,13 +56,13 @@ public class HashMap<K,V> {
         }
     }
     public V put(K key, V value){
-        V result = null;
         if( key == null){
             throw new IllegalArgumentException("Illegal key value!");
         }
         if(this.size >= this.getThreshold()){
             this.resize();
         }
+        V result = null;
         Entry entry = new Entry(key, value);
         int index = Math.abs(key.hashCode())% defaultSize;
         LinkedList list = table[index];
@@ -83,15 +83,21 @@ public class HashMap<K,V> {
 
     }
     public V get(K key){
+        if(key == null){
+            throw new IllegalArgumentException("Illegal key value!");
+        }
+        if(defaultSize <= 0){
+            throw new RuntimeException("Hashmap is empty!");
+        }
         Entry entry;
-        int index = Math.abs(key.hashCode())% defaultSize;
+        int index = Math.abs(key.hashCode()) % defaultSize;
         LinkedList list = table[index];
-        if(list == null) {
+        if (list == null) {
             return null;
         }
-        for(Object o : list){
-            entry = (Entry)o;
-            if(entry.getKey().equals(key)){
+        for (Object o : list) {
+            entry = (Entry) o;
+            if (entry.getKey().equals(key)) {
                 return (V) entry.getValue();
             }
         }
